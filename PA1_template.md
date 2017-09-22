@@ -1,18 +1,15 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## SETUP 
-```{r setup, include=TRUE}
+
+```r
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Loading and preprocessing the data
 Load the data (i.e. read.csv())
 
-```{r loading} 
+
+```r
 if(!file.exists("repdata%2Fdata%2Factivity.zip") | !file.exists("activity.csv") )
 {
         fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -22,12 +19,22 @@ if(!file.exists("repdata%2Fdata%2Factivity.zip") | !file.exists("activity.csv") 
 
 activity <- read.csv("activity.csv", header = T)
 head(activity)
+```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 Process/transform the data (if necessary) into a format suitable for your analysis
 
-```{r transform}
+
+```r
 #no processing
 ```
 
@@ -36,7 +43,8 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 #### Make a histogram of the total number of steps taken each day
 
-```{r meanTotalSteps}
+
+```r
 # split per day
 stepsPerDay <- split(activity$steps, activity$date)
 TotalStepsPerDay <- sapply(stepsPerDay, sum)
@@ -49,20 +57,24 @@ hist(TotalStepsPerDay,
      col=5)
 ```
 
+![](PA1_template_files/figure-html/meanTotalSteps-1.png)<!-- -->
+
 #### Calculate and report the mean and median total number of steps taken per day
 
-```{r meanAndMedianPerDay}
+
+```r
 # calculate mean and median
 meanTotalSteps <- prettyNum(mean(TotalStepsPerDay, na.rm = TRUE), scientific=FALSE) 
 medianTotalSteps <- prettyNum(median(TotalStepsPerDay, na.rm = TRUE), scientific=FALSE)
 ```
-The mean total number of steps taken per day are `r  meanTotalSteps`.
-The median total number of steps taken per day are `r medianTotalSteps`.
+The mean total number of steps taken per day are 10766.19.
+The median total number of steps taken per day are 10765.
 
 ## What is the average daily activity pattern?
 #### Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-``` {r TimeSeriesPlot}
+
+```r
 stepsPerInterval <- split(activity$steps, activity$interval)
 MeanStepsPerInterval <- sapply(stepsPerInterval, mean, na.rm = TRUE)
 intervals <- factor(unique(activity$interval))
@@ -73,24 +85,28 @@ plot(intervals, MeanStepsPerInterval, lty = 0,  xlab = "interval", ylab = "avera
 lines(intervals, MeanStepsPerInterval, lty = 1, lwd = 1, col = "black")
 ```
 
+![](PA1_template_files/figure-html/TimeSeriesPlot-1.png)<!-- -->
+
 #### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r intervalMaxSteps}
+
+```r
 MaxSteps <- max(MeanStepsPerInterval)
 MaxInterval <- intervals[MeanStepsPerInterval == MaxSteps]
 ```
 
-The interval with the maximum average number of steps is interval `r MaxInterval`.
+The interval with the maximum average number of steps is interval 835.
 
 ## Imputing missing values
 
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 #### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-``` {r missing}
+
+```r
 missingValues <- sum(is.na(activity$steps)) + sum(is.na(activity$date)) + sum(is.na(activity$interval))
 ```
-There are `r missingValues` missing values in the dataset.
+There are 2304 missing values in the dataset.
 
 
 ###Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -99,7 +115,8 @@ My strategy will be to fill eacht missing value with the overall average number 
 
 ### Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r imputing}
+
+```r
 ## new dataframe, to keep the original untouched
 imputed <- activity
 
@@ -108,11 +125,12 @@ missingSteps <- is.na(imputed$steps)
 imputed$steps[missingSteps] <- mean(activity$steps, na.rm = TRUE)
 missingValuesImputed <- sum(is.na(imputed$steps)) + sum(is.na(imputed$date)) + sum(is.na(imputed$interval))
 ```
-There are `r missingValuesImputed` missing values left in the imputed dataset.
+There are 0 missing values left in the imputed dataset.
 ```
 #### Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r imputedMeanTotalSteps}
+
+```r
 # split per day
 imputedStepsPerDay <- split(imputed$steps, imputed$date)
 imputedTotalStepsPerDay <- sapply(imputedStepsPerDay, sum)
@@ -125,15 +143,18 @@ hist(imputedTotalStepsPerDay,
      col=6)
 ```
 
+![](PA1_template_files/figure-html/imputedMeanTotalSteps-1.png)<!-- -->
+
 #### Calculate and report the mean and median total number of steps taken per day
 
-```{r imputedMeanAndMedianPerDay}
+
+```r
 # calculate mean and median
 imputedMeanTotalSteps <- prettyNum(mean(imputedTotalStepsPerDay, na.rm = TRUE), scientific=FALSE) 
 imputedMedianTotalSteps <- prettyNum(median(imputedTotalStepsPerDay, na.rm = TRUE), scientific=FALSE)
 ```
-After imputing the mean total number of steps taken per day are `r  imputedMeanTotalSteps`.
-The median total number of steps taken per day are `r imputedMedianTotalSteps`.
+After imputing the mean total number of steps taken per day are 10766.19.
+The median total number of steps taken per day are 10766.19.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -141,7 +162,8 @@ The median total number of steps taken per day are `r imputedMedianTotalSteps`.
 
 #### Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-``` {r imputedWeekends}
+
+```r
 # Determining weekenddays eand weekdays - weekenddays in dutch are "zaterdag"  and "zondag"
 imputed$dayName <- weekdays(as.Date(imputed$date))
 imputed$weekend <- ifelse(imputed$dayName%in% c("zaterdag", "zondag"), TRUE, FALSE)
@@ -151,8 +173,8 @@ imputed$weekend <- ifelse(imputed$dayName%in% c("zaterdag", "zondag"), TRUE, FAL
 
 As extra I made one plot with 2 lines (one for weekend and one for weekdays. This makes it easier to compare the patterns.
 
-```{r imputedWeekendPlot}
 
+```r
 # Weekend
 weekend <- imputed[imputed$weekend == TRUE,]
 weekendImputedStepsPerInterval <- split(weekend$steps, weekend$interval)
@@ -170,18 +192,28 @@ weekImputedIntervals <- factor(unique(week$interval))
 plot(intervals, MeanStepsPerInterval, lty = 0,  xlab = "interval", ylab = "average number of  steps", main = "Weekends")
 # adding lines
 lines(weekendImputedIntervals, weekendImputedMeanStepsPerInterval, lty = 1, lwd = 1, col = "blue")
+```
 
+![](PA1_template_files/figure-html/imputedWeekendPlot-1.png)<!-- -->
+
+```r
 # building the plot weekdays
 # original layout
 plot(intervals, MeanStepsPerInterval, lty = 0,  xlab = "interval", ylab = "average number of  steps", main = "Weekdays")
 # adding lines
 lines(weekImputedIntervals, weekImputedMeanStepsPerInterval, lty = 1, lwd = 1, col = "red")
+```
+
+![](PA1_template_files/figure-html/imputedWeekendPlot-2.png)<!-- -->
+
+```r
 # adding legend
 ```
 As extra I made one plot with 2 lines (one for weekend and one for weekdays. This makes it easier to compare the patterns.
 
 
-```{r extraPlot}
+
+```r
 # building the plot
 # original layout
 plot(intervals, MeanStepsPerInterval, lty = 0,  xlab = "interval", ylab = "average number of  steps", main = "Weekends vs Weekdays")
@@ -191,6 +223,8 @@ lines(weekImputedIntervals, weekImputedMeanStepsPerInterval, lty = 1, lwd = 1, c
 # adding legend
 legend("topright", pch = 1, col = c("blue", "red"), legend = c("Weekenddays", "Weekdays"))
 ```
+
+![](PA1_template_files/figure-html/extraPlot-1.png)<!-- -->
 
 
 YES, the pattern in the weekend differs from the pattern in the workingweekdays.
